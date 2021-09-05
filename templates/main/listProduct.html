@@ -1,0 +1,204 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+{% include 'main/navbar.html' %}
+
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+    <!-- Stock Table -->
+    <div class="container-fluid box">
+      <h3>Stock {{ itemType.capitalize }}</h3>
+      <div class="input-group flex-nowrap" style="margin-bottom: 10px;">
+        <span class="input-group-text" id="addon-wrapping">Search</span>
+        <input type="text" class="form-control" id="mySerialInput1" onkeyup="showProduct()" placeholder="Search for serial number" title="Type in a serial number" aria-describedby="addon-wrapping">
+      </div>
+      <div class="table-responsive table-box ">
+        <table class="table table-striped table-sm table-hover" id="stockTable">
+          <thead class="header table-dark">
+            <tr>
+              <th scope="col">Serial Number</th>
+              <th scope="col">Date Received</th>
+              <th scope="col">Supplier Name</th>
+              <th scope="col">Assign Product</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in stock %}
+            <tr>
+              <td>{{ item.serial_num }}</td>
+              <td>{{ item.date_received }}</td>
+              <td>{{ item.supplier }}</td>
+              <td>
+
+              <button type="button" class="btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalForm{{item.pk}}">
+                Assign
+              </button>
+              <!-- Bootstrap Modal for product assignment form -->
+              <div class="modal fade" id="modalForm{{item.pk}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Assign Product : {{ item.serial_num  }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <form action="{% url 'assignProduct' pk=item.pk %}" method="POST">
+                              {% csrf_token %}
+                                <div class="mb-3">
+                                    {{assignForm.sap_number}}
+                                    <!-- <input type="text" class="form-control" id="username" name="username" placeholder="Username" /> -->
+                                </div>
+                                <div class="mb-3">
+                                    {{assignForm.staff_number}}
+                                    <!-- <input type="password" class="form-control" id="password" name="password" placeholder="Password" /> -->
+                                </div>
+                                <div class="modal-footer d-block">
+                                    <button type="submit" class="btn btn-outline-dark float">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Assignment table -->
+    <div class="container-fluid box">
+      <h3>Assigned {{itemType.capitalize}}</h3>
+      
+      <div class="input-group flex-nowrap" style="margin-bottom: 10px;">
+        <span class="input-group-text" id="addon-wrapping">Search</span>
+        <input type="text" class="form-control" id="mySerialInput2" onkeyup="showAssignedProduct()" placeholder="Search for serial number" title="Type in a serial number" aria-describedby="addon-wrapping">
+      </div>
+      
+      <div class="table-responsive table-box">
+        <table class="table table-striped table-sm table-hover" id="assignmentTable">
+          <thead class="header table-dark">
+            <tr>
+              <th scope="col">Serial Number</th>
+              <th scope="col">Assigned To</th>
+              <th scope="col">SAP Number</th>
+              <th scope="col">Specification</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for item in assign %}
+            <tr>
+              <td>{{ item.serial_num }}</td>
+              <td>{{ item.emp_id }}</td>
+              <td>{{ item.emp_id.sap_number }}</td>
+              <td>{{ item.specification }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Under Repair Table -->
+    <div class="container-fluid box">
+      <h3>Under Repair {{itemType.capitalize}}</h3>
+      
+      <div class="input-group flex-nowrap" style="margin-bottom: 10px;">
+        <span class="input-group-text" id="addon-wrapping">Search</span>
+        <input type="text" class="form-control" id="mySerialInput3" onkeyup="showUnderRepairProduct()" placeholder="Search for serial number" title="Type in a serial number" aria-describedby="addon-wrapping">
+      </div>
+
+      <div class="table-responsive table-box">
+        <table class="table table-striped table-sm table-hover" id="underRepairTable">
+          <thead class="header table-dark">
+            <tr>
+                <th scope="col">Serial Number</th>
+                <th scope="col">Specification</th>
+                <th scope="col">Supplier Name</th>
+                <th scope="col">Mark As Repair</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in repair %}
+            <tr>
+              <td>{{ item.serial_num }}</td>
+              <td>{{ item.specification }}</td>
+              <td>{{ item.supplier_id }}</td>
+              <td><a href="{% url 'markRepaired' pk=item.pk %}">Mark Repaired</a></td>
+            </tr>
+            {% endfor %}
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </main>
+  </div>
+</div>
+
+
+<script>
+  function showProduct() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("mySerialInput1");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("stockTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+  }
+
+  function showAssignedProduct() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("mySerialInput2");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("assignmentTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+  }
+  
+  function showUnderRepairProduct() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("mySerialInput3");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("underRepairTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+  }
+
+</script>
+
+
+{% endblock %}

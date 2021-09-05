@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+{% include 'main/navbar.html' %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<div class="container-fluid w-50" style="background-color: white; padding: 3%; margin: 3%;">
+    <h3>Update Employee</h3>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            {{form.name}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">SAP Number</label>
+            {{form.sap_number}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Employee Number</label>
+            {{form.staff_number}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Contact</label>
+            {{form.contact}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Designation</label>
+            {{form.designation}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Select Department</label>
+            {{form.department}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Desk Number</label>
+            {{form.desk_num}}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Floor</label>
+            {{form.floor}}
+        </div>
+        
+        <button type="submit" class="btn btn-dark" name="submit_type" value="update">Update</button>
+        <button type="submit" class="btn btn-dark" name="submit_type" value="delete">Delete</button>
+    </form>
+    
+</div>
+
+
+
+{% endblock %}
