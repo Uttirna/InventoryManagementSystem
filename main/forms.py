@@ -9,7 +9,6 @@ todays_date = date.today()
 year = todays_date.year
 
 PROD_CHOICES = (
-    # ('-------', '-------'),
     ('DESKTOP','DESKTOP'),
     ('KEYBOARD', 'KEYBOARD'),
     ('HDD','HDD'),
